@@ -765,7 +765,8 @@ export default class Core extends ModuleInstance {
     /** Same best-effort preview the remote menu uses (gui.view), cached per second. */
     private roomIconHasAccess(character: BCPlusCharacter): boolean {
         if (character.isPlayer()) {
-            return true;
+            const authority = this.ModuleManager.getModule<Authority>("authority");
+            return authority?.hasPermission(Player.MemberNumber ?? -1, "gui.view") ?? true;
         }
         const member = character.MemberNumber;
         const cached = this.roomIconAccess.get(member);

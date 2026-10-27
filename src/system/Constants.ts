@@ -2,8 +2,8 @@ export const BCPLUS_NAME = "BCPlus";
 export const BCPLUS_SHORT_NAME = "BC+";
 export const BCPLUS_APP_NAME = "Bondage Club Plus";
 export const BCPLUS_AUTHOR = "Seles";
-export const BCPLUS_REPO = "https://github.com/Seles84/bc-plus";
-export const BCPLUS_WEBSITE = "https://seles84.github.io/bc-plus";
+export const BCPLUS_REPO = "https://github.com/GeneralKakyoin/bc-plus";
+export const BCPLUS_WEBSITE = "https://generalkakyoin.github.io/bc-plus";
 /**
  * Version-manifest endpoint: a worker in front of the Pages manifest whose
  * request count doubles as an anonymous usage figure (see cloudflare/).

@@ -121,7 +121,7 @@ writeFileSync("dist/version.json", JSON.stringify({ version: pkg.version }) + "\
 const bookmarklet = "javascript:(()=>{if(window.BCPlus===undefined)"
     + "{var n=document.createElement('script');"
     + "n.setAttribute('crossorigin','anonymous');"
-    + "n.src='https://seles84.github.io/bc-plus/bcplus.js?_='+Date.now();"
+    + "n.src='https://generalkakyoin.github.io/bc-plus/bcplus.js?_='+Date.now();"
     + "n.onload=()=>n.remove();document.head.appendChild(n);}})();";
 
 // Landing page for GitHub Pages (the deploy serves dist/ as the site root)
@@ -175,8 +175,8 @@ Runs standalone or in tandem with BCX.</p>
     <p>If dragging does not work, create a bookmark by hand and paste this as its address:</p>
     <p><code class="wrap">${bookmarklet}</code></p>
 </div>
-<p><a href="https://github.com/Seles84/bc-plus">Source on GitHub</a> &middot;
-<a href="https://github.com/Seles84/bc-plus/blob/main/CHANGE-LOG.md">Changelog</a></p>
+<p><a href="https://github.com/GeneralKakyoin/bc-plus">Source on GitHub</a> &middot;
+<a href="https://github.com/GeneralKakyoin/bc-plus/blob/main/CHANGE-LOG.md">Changelog</a></p>
 </body>
 </html>
 `);

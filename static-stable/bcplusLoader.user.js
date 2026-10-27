@@ -8,9 +8,9 @@
 // @include      /^https:\/\/(www\.)?bondage-europe\.com\/R\d+\/(BondageClub|\d+)(\/((index|\d+)\.html)?)?$/
 // @include      /^https:\/\/(www\.)?bondageeurope\.com\/R\d+\/(BondageClub|\d+)(\/((index|\d+)\.html)?)?$/
 // @include      /^https:\/\/(www\.)?bondage-asia\.com\/club\/R\d+(\/((index|\d+)\.html)?)?$/
-// @homepage     https://github.com/Seles84/bc-plus#readme
-// @source       https://github.com/Seles84/bc-plus
-// @downloadURL  https://seles84.github.io/bc-plus/bcplusLoader.user.js
+// @homepage     https://github.com/GeneralKakyoin/bc-plus#readme
+// @source       https://github.com/GeneralKakyoin/bc-plus
+// @downloadURL  https://generalkakyoin.github.io/bc-plus/bcplusLoader.user.js
 // @run-at       document-end
 // @grant        none
 // ==/UserScript==
@@ -22,7 +22,7 @@ setTimeout(
             const n = document.createElement("script");
             n.setAttribute("language", "JavaScript");
             n.setAttribute("crossorigin", "anonymous");
-            n.setAttribute("src", "https://seles84.github.io/bc-plus/bcplus.js?_=" + Date.now());
+            n.setAttribute("src", "https://generalkakyoin.github.io/bc-plus/bcplus.js?_=" + Date.now());
             n.onload = () => n.remove();
             document.head.appendChild(n);
         }

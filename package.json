@@ -10,7 +10,7 @@
     "private": true,
     "repository": {
         "type": "git",
-        "url": "https://github.com/Seles84/bc-plus"
+        "url": "https://github.com/GeneralKakyoin/bc-plus"
     },
     "scripts": {
         "build": "node build.mjs",
