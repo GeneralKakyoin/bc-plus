@@ -41,8 +41,12 @@ const modules = computed(() => core.ModuleManager.Modules.filter((m) =>
 
 function canAccessModule(module: ModuleInstance): boolean {
     version.value;
-    if (module.Slug === "core" && !remote.value) {
+    if (module.Slug === "core") {
         const authority = core.ModuleManager.getModule<AuthorityModule>("authority");
+        if (remote.value) {
+            const target = props.member !== undefined ? getChatroomCharacter(props.member) : null;
+            return target !== null && (authority?.remoteHasPermission(target, "gui.view") ?? false);
+        }
         return authority?.hasPermission(Player.MemberNumber ?? -1, "gui.view") ?? true;
     }
     return true;

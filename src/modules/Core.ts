@@ -82,6 +82,10 @@ export default class Core extends ModuleInstance {
         return "gui.view";
     }
 
+    override get SupportsRemote(): boolean {
+        return true;
+    }
+
     /** Once a preset has been explicitly chosen, it is locked until a factory reset. */
     isPresetLocked(): boolean {
         return this.Data.presetLocked === true;

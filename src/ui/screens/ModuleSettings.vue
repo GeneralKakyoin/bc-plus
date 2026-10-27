@@ -53,8 +53,11 @@ onMounted(() => {
 
 const canView = computed(() => {
     version.value;
-    if (props.slug === "core" && !remote) {
-        const authority = core.ModuleManager.getModule<Authority>("authority");
+    const authority = core.ModuleManager.getModule<Authority>("authority");
+    if (props.slug === "core") {
+        if (remote) {
+            return character !== null && (authority?.remoteHasPermission(character, "gui.view") ?? false);
+        }
         return authority?.hasPermission(Player.MemberNumber ?? -1, "gui.view") ?? true;
     }
     return true;

@@ -162,10 +162,6 @@ export class GUI extends ModuleInstance {
         if (character.BCPData?.["hardcore"]?.["others"] === true && !Player.CanInteract()) {
             return "your hands are bound";
         }
-        const authority = this.ModuleManager.getModule<Authority>("authority");
-        if (!(authority?.remoteHasPermission(character, "gui.view") ?? false)) {
-            return "no permission to view";
-        }
         return null;
     }
 
