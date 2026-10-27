@@ -51,8 +51,21 @@ onMounted(() => {
     }
 });
 
+const canView = computed(() => {
+    version.value;
+    if (props.slug === "core" && !remote) {
+        const authority = core.ModuleManager.getModule<Authority>("authority");
+        return authority?.hasPermission(Player.MemberNumber ?? -1, "gui.view") ?? true;
+    }
+    return true;
+});
+
 const canEdit = computed(() => {
     version.value;
+    if (props.slug === "core" && !remote) {
+        const authority = core.ModuleManager.getModule<Authority>("authority");
+        return authority?.hasPermission(Player.MemberNumber ?? -1, "gui.view") ?? true;
+    }
     const permission = module?.EditPermission;
     const authority = core.ModuleManager.getModule<Authority>("authority");
     if (remote) {
@@ -130,7 +143,7 @@ const canFactoryReset = computed(() => {
 });
 function factoryReset(): void {
     const coreModule = core.ModuleManager.getModule("core") as Core | undefined;
-    if (!coreModule || !canFactoryReset.value) {
+    if (!coreModule || !canFactoryReset.value || !canEdit.value) {
         return;
     }
     if (Date.now() < resetArmedUntil.value) {
@@ -144,7 +157,11 @@ function factoryReset(): void {
 </script>
 
 <template>
-    <div v-if="module" :class="grouped ? '@container mx-auto flex max-w-6xl flex-col gap-1' : 'mx-auto flex max-w-3xl flex-col gap-1'">
+    <div v-if="!canView" class="flex flex-col items-center justify-center p-8 text-center text-fg-dim">
+        <p class="mb-1 text-base font-semibold text-fg">Access Denied</p>
+        <p class="text-sm">You do not have permission to view General settings.</p>
+    </div>
+    <div v-else-if="module" :class="grouped ? '@container mx-auto flex max-w-6xl flex-col gap-1' : 'mx-auto flex max-w-3xl flex-col gap-1'">
         <!-- Categorized modules: section cards flowing into columns as the window grows -->
         <div v-if="grouped" class="gap-5 @3xl:columns-2">
             <section

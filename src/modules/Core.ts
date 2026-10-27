@@ -78,6 +78,10 @@ export default class Core extends ModuleInstance {
         }];
     }
 
+    override get EditPermission(): string | null {
+        return "gui.view";
+    }
+
     /** Once a preset has been explicitly chosen, it is locked until a factory reset. */
     isPresetLocked(): boolean {
         return this.Data.presetLocked === true;
@@ -765,8 +769,7 @@ export default class Core extends ModuleInstance {
     /** Same best-effort preview the remote menu uses (gui.view), cached per second. */
     private roomIconHasAccess(character: BCPlusCharacter): boolean {
         if (character.isPlayer()) {
-            const authority = this.ModuleManager.getModule<Authority>("authority");
-            return authority?.hasPermission(Player.MemberNumber ?? -1, "gui.view") ?? true;
+            return true;
         }
         const member = character.MemberNumber;
         const cached = this.roomIconAccess.get(member);

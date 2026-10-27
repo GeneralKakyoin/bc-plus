@@ -96,9 +96,9 @@ export class GUI extends ModuleInstance {
         return true;
     }
 
-    /** Opens the own main menu, for /bcp menu. False when blocked. */
+    /** Opens the own main menu, for /bcp menu. False when hardcore blocks it. */
     openModalMenu(): boolean {
-        if (this.playerViewBlockReason() !== null) {
+        if (this.hardcoreSelfBlocked()) {
             return false;
         }
         this.openWindow();
@@ -116,12 +116,7 @@ export class GUI extends ModuleInstance {
             return "they are not in this room";
         }
         if (character.isPlayer()) {
-            const reason = this.playerViewBlockReason();
-            if (reason !== null) {
-                return reason;
-            }
-            this.openWindow();
-            return null;
+            return this.openModalMenu() ? null : "your hands are bound (hardcore mode)";
         }
         if (character.BCPVersion === null) {
             return "they do not run BC+";
@@ -136,7 +131,7 @@ export class GUI extends ModuleInstance {
 
     /** Opens the own window directly on the Rooms screen (room-editor entry point). */
     openRoomsScreen(): boolean {
-        if (this.playerViewBlockReason() !== null) {
+        if (this.hardcoreSelfBlocked()) {
             return false;
         }
         if (!this.uiWindow) {
@@ -155,21 +150,6 @@ export class GUI extends ModuleInstance {
     /** Hardcore option 1: the player's own BC+ refuses to open while bound. */
     private hardcoreSelfBlocked(): boolean {
         return this.ModuleManager.getModule<Core>("core")?.hardcoreSelfBlocked() === true;
-    }
-
-    /**
-     * Why the player's own BC+ may not open (or stay open) right now, or null.
-     * Blocked when view permission is revoked (Self unchecked) or hardcore blocks.
-     */
-    private playerViewBlockReason(): string | null {
-        const authority = this.ModuleManager.getModule<Authority>("authority");
-        if (authority && !authority.hasPermission(Player.MemberNumber ?? -1, "gui.view")) {
-            return "no permission to view";
-        }
-        if (this.hardcoreSelfBlocked()) {
-            return "your hands are bound";
-        }
-        return null;
     }
 
     /**
@@ -203,7 +183,7 @@ export class GUI extends ModuleInstance {
         const viewing = this.uiWindow.Viewing;
         const target = viewing !== null ? getChatroomCharacter(viewing) : null;
         const reason = viewing === null || target === null || target.isPlayer()
-            ? this.playerViewBlockReason()
+            ? (this.hardcoreSelfBlocked() ? "your hands are bound" : null)
             : this.remoteViewBlockReason(target);
         if (reason !== null) {
             this.uiWindow.close();
@@ -294,8 +274,7 @@ export class GUI extends ModuleInstance {
                     // Blocked storage - the spot just won't persist
                 }
             } else if (!this.openModalMenu()) {
-                const reason = this.playerViewBlockReason() ?? "access denied";
-                BCPNotifyPlayer(`BC+ cannot open - ${reason}.`);
+                BCPNotifyPlayer("BC+ cannot open - your hands are bound.");
             }
         });
         window.addEventListener("resize", clamp);
@@ -414,18 +393,15 @@ export class GUI extends ModuleInstance {
             return;
         }
         const canOpen = this.canOpenMenuFor(character);
-        const blockReason = character.isPlayer()
-            ? this.playerViewBlockReason()
-            : this.remoteViewBlockReason(character);
         DrawButton(
             ...this.buttonSlot(),
             "",
             "White",
             appLogo,
             character.isPlayer()
-                ? `${BCPLUS_SHORT_NAME} Settings${canOpen ? "" : ` - ${blockReason ?? "no permission to view"}`}`
+                ? `${BCPLUS_SHORT_NAME} Settings${canOpen ? "" : " - your hands are bound"}`
                 : `${character.Nickname} runs ${BCPLUS_SHORT_NAME} v${character.BCPVersion}`
-                    + (canOpen ? "" : ` - ${blockReason ?? "no permission to view"}`),
+                    + (canOpen ? "" : ` - ${this.remoteViewBlockReason(character) ?? "no permission to view"}`),
             !canOpen,
         );
         this.drawWeldLine(character);
@@ -460,10 +436,10 @@ export class GUI extends ModuleInstance {
         MainCanvas.textAlign = prevAlign;
     }
 
-    /** Own menu opens unless blocked; others' when they run BC+ and permit viewing. */
+    /** Own menu opens unless hardcore blocks it; others' when they run BC+ and permit viewing. */
     private canOpenMenuFor(character: BCPlusCharacter): boolean {
         if (character.isPlayer()) {
-            return this.playerViewBlockReason() === null;
+            return !this.hardcoreSelfBlocked();
         }
         if (character.BCPVersion === null) {
             return false;

@@ -18,9 +18,11 @@ import WeldingView from "@/ui/screens/WeldingView.vue";
 import type { Component } from "vue";
 import { BCPLUS_REPO, BCPLUS_VERSION } from "@/system/Constants";
 import { BCPVersionCompare, parseBCPVersion } from "@/utils/Version";
-import { MemberNumberToName } from "@/utils/Messaging";
+import { BCPNotifyPlayer, MemberNumberToName } from "@/utils/Messaging";
 import { getChatroomCharacter } from "@/utils/BCPlusCharacter";
+import { useBcpVersion } from "@/ui/composables";
 import type { ModuleInstance } from "@/system/module/ModuleInstance";
+import type AuthorityModule from "@/modules/Authority";
 import type Core from "@/modules/Core";
 
 const props = defineProps<{
@@ -30,11 +32,21 @@ const props = defineProps<{
 
 const core = inject(BCPLUS_KEY)!;
 const nav = inject(NAV_KEY)!;
+const { version } = useBcpVersion();
 
 const remote = computed(() => props.member !== undefined);
 
 const modules = computed(() => core.ModuleManager.Modules.filter((m) =>
     (remote.value ? m.SupportsRemote : m.HasGUI && m.Config.Active)));
+
+function canAccessModule(module: ModuleInstance): boolean {
+    version.value;
+    if (module.Slug === "core" && !remote.value) {
+        const authority = core.ModuleManager.getModule<AuthorityModule>("authority");
+        return authority?.hasPermission(Player.MemberNumber ?? -1, "gui.view") ?? true;
+    }
+    return true;
+}
 
 /** Custom screens already ported to the new window. */
 const PORTED_SCREENS: Record<string, Component> = {
@@ -54,6 +66,10 @@ const PORTED_SCREENS: Record<string, Component> = {
 
 
 function openModule(module: ModuleInstance): void {
+    if (!canAccessModule(module)) {
+        BCPNotifyPlayer("You do not have permission to view General settings.");
+        return;
+    }
     if (remote.value && !getChatroomCharacter(props.member!)) {
         return;
     }
@@ -113,9 +129,10 @@ const updateText = computed(() => {
             <button
                 v-for="module in modules"
                 :key="module.Slug"
-                class="flex items-center gap-3 rounded-lg bg-surface p-4 text-left hover:bg-surface-hover"
+                class="flex items-center gap-3 rounded-lg bg-surface p-4 text-left transition-opacity"
+                :class="canAccessModule(module) ? 'hover:bg-surface-hover' : 'opacity-40 cursor-not-allowed'"
                 style="border: 1px solid var(--bcp-border);"
-                :title="module.Config.HoverText || module.Config.Description"
+                :title="!canAccessModule(module) ? 'You do not have permission to view General settings' : (module.Config.HoverText || module.Config.Description)"
                 @click="openModule(module)"
             >
                 <img
